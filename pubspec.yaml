@@ -20,6 +20,7 @@ dependencies:
   video_player: ^2.9.2
   audioplayers: ^6.0.0
   path_provider: ^2.1.4
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:
