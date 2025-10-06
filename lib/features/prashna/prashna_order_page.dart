@@ -150,7 +150,7 @@ class _PrashnaOrderViewState extends State<PrashnaOrderView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Record your audio response and submit (mobile & web)',
+                Text('Record your audio response and submit',
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 12),
                 Wrap(
