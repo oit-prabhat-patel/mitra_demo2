@@ -1,11 +1,19 @@
+// Keep all your existing imports
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Import provider
+import 'package:google_fonts/google_fonts.dart';
+import 'package:prashna_pooja_app/widgets/themed_buttons.dart';
+import 'package:provider/provider.dart';
 import 'package:prashna_pooja_app/core/uploader.dart';
 import 'package:prashna_pooja_app/util/audio_preview.dart';
 import 'package:prashna_pooja_app/services/audio_recorder.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+
+// Keep your PrashnaOrderPage, PrashnaOrderView, and _PrashnaOrderViewState
+// classes and their logic exactly the same.
+// Only the build method in _PrashnaOrderViewState needs to be changed.
 
 class PrashnaOrderPage extends StatelessWidget {
   // Can become a StatelessWidget
@@ -33,8 +41,8 @@ class PrashnaOrderView extends StatefulWidget {
 }
 
 class _PrashnaOrderViewState extends State<PrashnaOrderView> {
-  // We no longer need to manage the recorder instance or its lifecycle here.
-  // The provider does it for us.
+  // PASTE ALL YOUR EXISTING LOGIC, METHODS, AND STATE VARIABLES HERE...
+  // NO CHANGES needed for the logic.
 
   String status = 'Idle';
   Uint8List? pickedBytes;
@@ -45,6 +53,7 @@ class _PrashnaOrderViewState extends State<PrashnaOrderView> {
     final recorder = Provider.of<AudioRecorderService>(context, listen: false);
     showModalBottomSheet(
       context: context,
+      backgroundColor: const Color(0xFF2c3e50), // Themed bottom sheet
       showDragHandle: true,
       isScrollControlled: true,
       builder: (ctx) {
@@ -55,7 +64,10 @@ class _PrashnaOrderViewState extends State<PrashnaOrderView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text('Preview audio',
-                  style: Theme.of(context).textTheme.titleMedium),
+                  style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600)),
               const SizedBox(height: 12),
               SizedBox(
                 height: 80,
@@ -65,12 +77,12 @@ class _PrashnaOrderViewState extends State<PrashnaOrderView> {
                         filePath: recorder.path ?? pickedPath,
                         bytes: pickedBytes),
               ),
-              const SizedBox(height: 12),
-              FilledButton.icon(
+              const SizedBox(height: 16),
+              PrimaryButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                icon: const Icon(Icons.check),
-                label: const Text('Done'),
-              )
+                icon: Icons.check,
+                label: 'Done',
+              ),
             ],
           ),
         );
@@ -133,72 +145,131 @@ class _PrashnaOrderViewState extends State<PrashnaOrderView> {
 
   @override
   Widget build(BuildContext context) {
-    // Consumer widget listens to the AudioRecorderService and rebuilds
-    // its child widget tree whenever notifyListeners() is called.
+    const backgroundGradient = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [Color(0xFF1a237e), Color(0xFF0d47a1)],
+    );
+
     return Consumer<AudioRecorderService>(
       builder: (context, recorder, child) {
-        // Get the state directly from the 'recorder' instance
         final isRec = recorder.isRecording;
         final hasData =
             (!kIsWeb && (recorder.path != null || pickedPath != null)) ||
                 (kIsWeb && ((recorder.bytes != null) || (pickedBytes != null)));
 
         return Scaffold(
-          appBar: AppBar(title: Text('Prashna • ${widget.orderId}')),
-          body: Padding(
+          appBar: AppBar(
+            title: Text('Prashna • ${widget.orderId}',
+                style: GoogleFonts.poppins()),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
+          backgroundColor: backgroundGradient.colors.first,
+          body: Container(
+            decoration: const BoxDecoration(gradient: backgroundGradient),
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text('Record your audio response and submit',
-                    style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: isRec ? null : _startRec,
-                      icon: const Icon(Icons.mic),
-                      label: const Text('Start Recording'),
-                    ),
-                    FilledButton.icon(
-                      onPressed: isRec ? _stopRec : null,
-                      icon: const Icon(Icons.stop_circle_outlined),
-                      label: const Text('Stop'),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: _pickAudio,
-                      icon: const Icon(Icons.upload_file),
-                      label: const Text('Pick Audio (Alt)'),
-                    ),
-                  ],
+                    style:
+                        GoogleFonts.poppins(color: Colors.white, fontSize: 18)),
+                const SizedBox(height: 20),
+
+                // --- Action Buttons ---
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      ActionButton(
+                          onPressed: isRec ? null : _startRec,
+                          icon: Icons.mic,
+                          label: 'Start',
+                          color: Colors.green.shade600),
+                      ActionButton(
+                          onPressed: isRec ? _stopRec : null,
+                          icon: Icons.stop_circle_outlined,
+                          label: 'Stop',
+                          color: Colors.red.shade600),
+                      ActionButton(
+                          onPressed: _pickAudio,
+                          icon: Icons.upload_file,
+                          label: 'Pick Audio',
+                          color: Colors.blueGrey.shade600),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
-                ListTile(
-                  leading: const Icon(Icons.info_outline),
-                  title: const Text('Status'),
-                  subtitle: Text(status),
+
+                // --- Status Info Card ---
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline,
+                          color: Colors.white.withOpacity(0.7)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Status',
+                                style: GoogleFonts.poppins(
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontSize: 12)),
+                            Text(status,
+                                style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 8),
-                if (kIsWeb)
-                  AudioPreview(bytes: recorder.bytes ?? pickedBytes)
-                else
-                  AudioPreview(
-                      filePath: recorder.path ?? pickedPath,
-                      bytes: pickedBytes),
+                const SizedBox(height: 20),
+
+                // --- Audio Preview ---
+                if (hasData)
+                  (kIsWeb)
+                      ? AudioPreview(bytes: recorder.bytes ?? pickedBytes)
+                      : AudioPreview(
+                          filePath: recorder.path ?? pickedPath,
+                          bytes: pickedBytes),
+
                 const Spacer(),
-                OutlinedButton.icon(
+
+                // --- Bottom Buttons ---
+                SecondaryButton(
                   onPressed: hasData ? _showAudioPreview : null,
-                  icon: const Icon(Icons.play_circle_outline),
-                  label: const Text('Preview'),
+                  icon: Icons.play_circle_outline,
+                  label: 'Preview Audio',
                 ),
-                FilledButton.icon(
+                const SizedBox(height: 12),
+                PrimaryButton(
                   onPressed: hasData ? _upload : null,
-                  icon: const Icon(Icons.cloud_upload_outlined),
-                  label: const Text('Submit to Server'),
-                )
-              ],
+                  icon: Icons.cloud_upload_outlined,
+                  label: 'Submit to Server',
+                ),
+              ]
+                  .animate(interval: 100.ms)
+                  .fadeIn()
+                  .slideY(begin: 0.2, curve: Curves.easeOut),
             ),
           ),
         );

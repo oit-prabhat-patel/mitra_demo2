@@ -1,28 +1,27 @@
+// lib/widgets/themed/order_item_tile.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class HomeTile extends StatefulWidget {
+class OrderItemTile extends StatefulWidget {
   final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
-  final List<Color> gradientColors;
 
-  const HomeTile({
+  const OrderItemTile({
     super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
-    this.gradientColors = const [Colors.blue, Colors.purple],
   });
 
   @override
-  State<HomeTile> createState() => _HomeTileState();
+  State<OrderItemTile> createState() => _OrderItemTileState();
 }
 
-class _HomeTileState extends State<HomeTile> {
+class _OrderItemTileState extends State<OrderItemTile> {
   bool _isHovered = false;
 
   @override
@@ -36,37 +35,21 @@ class _HomeTileState extends State<HomeTile> {
         onTapCancel: () => setState(() => _isHovered = false),
         onTap: widget.onTap,
         child: AnimatedScale(
-          scale: _isHovered ? 1.05 : 1.0,
+          scale: _isHovered ? 1.03 : 1.0,
           duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
+          curve: Curves.easeOut,
           child: Container(
+            margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: widget.gradientColors,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.white.withOpacity(0.1),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(widget.icon, size: 36, color: Colors.white),
-                  ),
+                  Icon(widget.icon, size: 28, color: Colors.white),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
@@ -75,8 +58,8 @@ class _HomeTileState extends State<HomeTile> {
                         Text(
                           widget.title,
                           style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
                         ),
@@ -84,15 +67,15 @@ class _HomeTileState extends State<HomeTile> {
                         Text(
                           widget.subtitle,
                           style: GoogleFonts.poppins(
-                            color: Colors.white.withOpacity(0.85),
-                            fontSize: 14,
+                            color: Colors.white.withOpacity(0.7),
+                            fontSize: 12,
                           ),
                         ),
                       ],
                     ),
                   ),
                   const Icon(Icons.arrow_forward_ios,
-                      color: Colors.white, size: 18),
+                      color: Colors.white70, size: 16),
                 ],
               ),
             ),
@@ -100,9 +83,9 @@ class _HomeTileState extends State<HomeTile> {
         ),
       ),
     )
-        // Animate the card as it enters the screen
+        // Staggered animation for list items
         .animate()
-        .fadeIn(duration: 500.ms, delay: 200.ms)
-        .slideY(begin: 0.2, end: 0, curve: Curves.easeOut);
+        .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+        .slideX(begin: -0.1, duration: 400.ms, curve: Curves.easeOut);
   }
 }
